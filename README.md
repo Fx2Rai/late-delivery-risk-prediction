@@ -71,3 +71,13 @@ Project DS3/
 - **Module 2 (Order Prediction)**: Real-time risk probability prediction on custom inputs. Utilises SHAP values to explain the top drivers for *why* an order was flagged as high or low risk.
 - **Module 3 (Region & Mode Analysis)**: Geographic density heatmaps and mode performance metrics.
 - **Module 4 (Action Panel)**: An operational queue dynamically filtering the highest risk orders so the logistics team can take immediate action.
+
+## 🚀 Live Demo
+
+Try the deployed Streamlit application:
+
+👉 https://late-delivery-risk-prediction-3dptcudisyzfdxwufkhhdw.streamlit.app/
+
+> The public repository does not include the raw APL Logistics dataset.
+> The application accesses the dataset securely through a private repository
+> and Streamlit Secrets.
