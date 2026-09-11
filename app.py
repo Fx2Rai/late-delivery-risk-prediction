@@ -214,7 +214,7 @@ st.markdown("""
 # ──────────────────────────────────────────────────────────────────────────────
 # CONSTANTS
 # ──────────────────────────────────────────────────────────────────────────────
-DATA_PATH  = "APL_Logistics.csv"
+DATA_PATH = "APL_Logistics.csv"
 MODEL_DIR  = "models"
 FIG_DIR    = "figures"
 
@@ -227,43 +227,120 @@ PLOTLY_THEME = dict(
     colorway=["#7c3aed","#2563eb","#06b6d4","#10b981","#f59e0b","#ef4444"],
 )
 
-RISK_COLORS = {"Low Risk": "#22c55e", "Medium Risk": "#f59e0b", "High Risk": "#ef4444"}
+RISK_COLORS = {
+    "Low Risk": "#22c55e",
+    "Medium Risk": "#f59e0b",
+    "High Risk": "#ef4444"
+}
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# DATA & MODEL LOADING  (cached)
+# DATA LOADING
 # ──────────────────────────────────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
 def load_data() -> pd.DataFrame:
-    df = pd.read_csv(DATA_PATH, encoding="latin-1")
-    df["Customer Lname"].fillna("Unknown", inplace=True)
-    df["Customer Zipcode"].fillna(df["Customer Zipcode"].median(), inplace=True)
+    """
+    Load the historical logistics dataset.
+
+    Local development:
+        Reads APL_Logistics.csv from the project root.
+
+    Streamlit Cloud:
+        Downloads the dataset from the private GitHub repository using
+        credentials stored in Streamlit Secrets.
+    """
+
+    # ── LOCAL DEVELOPMENT ────────────────────────────────────────────────────
+    if os.path.exists(DATA_PATH):
+        df = pd.read_csv(
+            DATA_PATH,
+            encoding="latin-1"
+        )
+
+    # ── STREAMLIT CLOUD / PRIVATE DATA SOURCE ────────────────────────────────
+    elif "DATA_URL" in st.secrets and "DATA_TOKEN" in st.secrets:
+
+        response = requests.get(
+            st.secrets["DATA_URL"],
+            headers={
+                "Authorization": f"Bearer {st.secrets['DATA_TOKEN']}"
+            },
+            timeout=180,
+            allow_redirects=False
+        )
+
+        # GitHub may redirect the authenticated request to the actual
+        # Git LFS object. Follow the redirect without forwarding the token.
+        if response.status_code in (301, 302, 303, 307, 308):
+            download_url = response.headers.get("Location")
+
+            if not download_url:
+                st.error("Unable to locate the private dataset download.")
+                st.stop()
+
+            response = requests.get(
+                download_url,
+                timeout=180
+            )
+
+        response.raise_for_status()
+
+        df = pd.read_csv(
+            io.BytesIO(response.content),
+            encoding="latin-1"
+        )
+
+    # ── CONFIGURATION ERROR ──────────────────────────────────────────────────
+    else:
+        st.error(
+            "Historical dataset is unavailable. "
+            "For local development, place APL_Logistics.csv in the project "
+            "root. For Streamlit Cloud, configure DATA_URL and DATA_TOKEN "
+            "in Streamlit Secrets."
+        )
+        st.stop()
+
+    # ── MISSING-VALUE HANDLING ───────────────────────────────────────────────
+    df["Customer Lname"] = df["Customer Lname"].fillna("Unknown")
+
+    df["Customer Zipcode"] = df["Customer Zipcode"].fillna(
+        df["Customer Zipcode"].median()
+    )
+
     return df
 
+
+# ──────────────────────────────────────────────────────────────────────────────
+# DATA & MODEL LOADING (cached)
+# ──────────────────────────────────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
 def get_order_probabilities(df_raw: pd.DataFrame, _pipeline, _region_map):
     """Vectorized scoring of entire dataset (cached for speed)."""
     df_fe = add_features(df_raw, _region_map)
     return _pipeline.predict_proba(df_fe)[:, 1]
 
+
 @st.cache_resource(show_spinner=False)
 def load_models():
     """Load the Group 2 unified pipeline artifacts."""
-    # Try Group 2 pipeline first, fall back to Group 1 model
+
     if os.path.exists(f"{MODEL_DIR}/best_pipeline.pkl"):
         pipeline = joblib.load(f"{MODEL_DIR}/best_pipeline.pkl")
         region_map = joblib.load(f"{MODEL_DIR}/region_risk_map.pkl")
     else:
-        pipeline   = joblib.load(f"{MODEL_DIR}/best_model.pkl")
+        pipeline = joblib.load(f"{MODEL_DIR}/best_model.pkl")
         region_map = {}
+
     with open(f"{MODEL_DIR}/metrics_summary.json") as f:
         metrics = json.load(f)
+
     return pipeline, region_map, metrics
+
 
 def models_available() -> bool:
     return (
-        os.path.exists(f"{MODEL_DIR}/best_pipeline.pkl") or
-        os.path.exists(f"{MODEL_DIR}/best_model.pkl")
+        os.path.exists(f"{MODEL_DIR}/best_pipeline.pkl")
+        or os.path.exists(f"{MODEL_DIR}/best_model.pkl")
     )
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -1023,10 +1100,13 @@ def module_action_panel(df: pd.DataFrame, sel_mode, sel_market, sel_segment,
         "Shipping Mode", "Market", "Sales"
     ] if c in high_risk.columns]
     
-    # If Order Id isn't present, use the index
-    if "Order Id" not in display_cols:
+    # Create a consistent Order column for display
+    if "Order Id" in high_risk.columns:
+        high_risk["Order"] = high_risk["Order Id"].astype(str)
+    else:
         high_risk["Order"] = "ORD-" + high_risk.index.astype(str)
-        display_cols.insert(0, "Order")
+        
+    display_cols.insert(0, "Order")
 
     # Add Action column
     high_risk["Action"] = "⚠️ Expedite Shipping"
@@ -1065,8 +1145,7 @@ def module_action_panel(df: pd.DataFrame, sel_mode, sel_market, sel_segment,
     )
     fig3.add_vline(x=0.40, line_dash="dash", line_color="#f59e0b",
                    annotation_text="Medium Risk ≥ 40%", annotation_position="top right")
-    fig3.add_vline(x=0.70, line_dash="dash", line_color="#ef4444",
-                   annotation_text="High Risk ≥ 70%", annotation_position="top right")
+    fig3.add_vline(x=risk_thresh, line_dash="dash", line_color="#ef4444", annotation_text=f"High Risk ≥ {risk_thresh:.0%}", annotation_position="top right")
     fig3.update_layout(**PLOTLY_THEME, height=360,
                        margin=dict(t=60, b=40, l=60, r=20))
     st.plotly_chart(fig3, use_container_width=True)
