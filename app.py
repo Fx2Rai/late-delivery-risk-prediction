@@ -239,76 +239,100 @@ RISK_COLORS = {
 # ──────────────────────────────────────────────────────────────────────────────
 @st.cache_data(show_spinner=False)
 def load_data() -> pd.DataFrame:
-    """
-    Load the historical logistics dataset.
-
-    Local development:
-        Reads APL_Logistics.csv from the project root.
-
-    Streamlit Cloud:
-        Downloads the dataset from the private GitHub repository using
-        credentials stored in Streamlit Secrets.
-    """
-
-    # ── LOCAL DEVELOPMENT ────────────────────────────────────────────────────
     if os.path.exists(DATA_PATH):
-        df = pd.read_csv(
-            DATA_PATH,
-            encoding="latin-1"
+        df = pd.read_csv(DATA_PATH, encoding="latin-1")
+
+    elif "DATA_TOKEN" in st.secrets:
+        token = st.secrets["DATA_TOKEN"]
+
+        # Git LFS object information for the private dataset
+        lfs_oid = "f0eb8308bbf8b80df166cc3828b1efb12956ac08be0e99f71c8ddf811664f685"
+        lfs_size = 62500190
+
+        # Ask GitHub LFS for an authenticated download URL
+        lfs_url = (
+            "https://github.com/Fx2Rai/"
+            "apl-logistics-private-data.git/info/lfs/objects/batch"
         )
 
-    # ── STREAMLIT CLOUD / PRIVATE DATA SOURCE ────────────────────────────────
-    elif "DATA_URL" in st.secrets and "DATA_TOKEN" in st.secrets:
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.git-lfs+json",
+            "Content-Type": "application/vnd.git-lfs+json",
+        }
 
-        response = requests.get(
-            st.secrets["DATA_URL"],
-            headers={
-                "Authorization": f"Bearer {st.secrets['DATA_TOKEN']}"
-            },
-            timeout=180,
-            allow_redirects=False
+        payload = {
+            "operation": "download",
+            "transfers": ["basic"],
+            "objects": [
+                {
+                    "oid": lfs_oid,
+                    "size": lfs_size,
+                }
+            ],
+        }
+
+        response = requests.post(
+            lfs_url,
+            headers=headers,
+            json=payload,
+            timeout=60,
         )
-
-        # GitHub may redirect the authenticated request to the actual
-        # Git LFS object. Follow the redirect without forwarding the token.
-        if response.status_code in (301, 302, 303, 307, 308):
-            download_url = response.headers.get("Location")
-
-            if not download_url:
-                st.error("Unable to locate the private dataset download.")
-                st.stop()
-
-            response = requests.get(
-                download_url,
-                timeout=180
-            )
-
         response.raise_for_status()
 
+        batch_result = response.json()
+
+        objects = batch_result.get("objects", [])
+        if not objects:
+            st.error("GitHub LFS returned no dataset object.")
+            st.stop()
+
+        obj = objects[0]
+
+        if "error" in obj:
+            error_info = obj["error"]
+            st.error(
+                f"GitHub LFS could not provide the dataset "
+                f"(HTTP {error_info.get('code', 'unknown')})."
+            )
+            st.stop()
+
+        download_action = obj.get("actions", {}).get("download")
+
+        if not download_action:
+            st.error("GitHub LFS did not return a download URL.")
+            st.stop()
+
+        download_headers = download_action.get("header", {})
+
+        download_response = requests.get(
+            download_action["href"],
+            headers=download_headers,
+            timeout=180,
+        )
+        download_response.raise_for_status()
+
         df = pd.read_csv(
-            io.BytesIO(response.content),
-            encoding="latin-1"
+            io.BytesIO(download_response.content),
+            encoding="latin-1",
         )
 
-    # ── CONFIGURATION ERROR ──────────────────────────────────────────────────
     else:
         st.error(
             "Historical dataset is unavailable. "
-            "For local development, place APL_Logistics.csv in the project "
-            "root. For Streamlit Cloud, configure DATA_URL and DATA_TOKEN "
-            "in Streamlit Secrets."
+            "For local development, place APL_Logistics.csv "
+            "in the project root. For Streamlit Cloud, "
+            "configure DATA_TOKEN in Streamlit Secrets."
         )
         st.stop()
 
-    # ── MISSING-VALUE HANDLING ───────────────────────────────────────────────
     df["Customer Lname"] = df["Customer Lname"].fillna("Unknown")
-
-    df["Customer Zipcode"] = df["Customer Zipcode"].fillna(
-        df["Customer Zipcode"].median()
+    df["Customer Zipcode"] = (
+        df["Customer Zipcode"]
+        .fillna(df["Customer Zipcode"].median())
     )
 
     return df
-
 
 # ──────────────────────────────────────────────────────────────────────────────
 # DATA & MODEL LOADING (cached)
