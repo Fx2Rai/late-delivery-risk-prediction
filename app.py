@@ -8,8 +8,10 @@ Run with:  streamlit run app.py
 """
 
 import os
+import io
 import json
 import joblib
+import requests
 import warnings
 import numpy as np
 import pandas as pd
