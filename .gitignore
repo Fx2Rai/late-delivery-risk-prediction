@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+.DS_Store
+
+# Private / large datasets
+APL_Logistics.csv
+data/*.csv
+
+# Large model handled separately / unnecessary duplicate

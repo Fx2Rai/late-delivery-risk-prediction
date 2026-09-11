@@ -1,0 +1,490 @@
+===================== PART 1 -- DATASET VALIDATION =====================
+
+[1.1] Loading: APL_Logistics.csv
+      Shape   : 180,519 rows x 40 columns
+
+[1.2] Column Names:
+       0. Type
+       1. Days for shipping (real)
+       2. Days for shipment (scheduled)
+       3. Benefit per order
+       4. Sales per customer
+       5. Delivery Status
+       6. Late_delivery_risk
+       7. Category Id
+       8. Category Name
+       9. Customer City
+      10. Customer Country
+      11. Customer Fname
+      12. Customer Id
+      13. Customer Lname
+      14. Customer Segment
+      15. Customer State
+      16. Customer Street
+      17. Customer Zipcode
+      18. Department Id
+      19. Department Name
+      20. Latitude
+      21. Longitude
+      22. Market
+      23. Order City
+      24. Order Country
+      25. Order Customer Id
+      26. Order Item Discount
+      27. Order Item Discount Rate
+      28. Order Item Product Price
+      29. Order Item Profit Ratio
+      30. Order Item Quantity
+      31. Sales
+      32. Order Item Total
+      33. Order Profit Per Order
+      34. Order Region
+      35. Order State
+      36. Order Status
+      37. Product Name
+      38. Product Price
+      39. Shipping Mode
+
+[1.3] Data Types:
+      Type                                          str
+      Days for shipping (real)                      int64
+      Days for shipment (scheduled)                 int64
+      Benefit per order                             float64
+      Sales per customer                            float64
+      Delivery Status                               str
+      Late_delivery_risk                            int64
+      Category Id                                   int64
+      Category Name                                 str
+      Customer City                                 str
+      Customer Country                              str
+      Customer Fname                                str
+      Customer Id                                   int64
+      Customer Lname                                str
+      Customer Segment                              str
+      Customer State                                str
+      Customer Street                               str
+      Customer Zipcode                              float64
+      Department Id                                 int64
+      Department Name                               str
+      Latitude                                      float64
+      Longitude                                     float64
+      Market                                        str
+      Order City                                    str
+      Order Country                                 str
+      Order Customer Id                             int64
+      Order Item Discount                           float64
+      Order Item Discount Rate                      float64
+      Order Item Product Price                      float64
+      Order Item Profit Ratio                       float64
+      Order Item Quantity                           int64
+      Sales                                         float64
+      Order Item Total                              float64
+      Order Profit Per Order                        float64
+      Order Region                                  str
+      Order State                                   str
+      Order Status                                  str
+      Product Name                                  str
+      Product Price                                 float64
+      Shipping Mode                                 str
+
+      Numerical columns : 21
+      Categorical cols  : 19
+
+[1.4] Missing Values:
+      Customer Lname                                    8 missing (0.004%)
+      Customer Zipcode                                  3 missing (0.002%)
+
+[1.5] Duplicate Rows:
+      Total duplicates  : 0
+
+[1.6] Target Variable Validation: Late_delivery_risk
+      Unique values  : [np.int64(0), np.int64(1)]
+      Value counts   :
+         1 (label) ->  98,977  (54.83%)
+         0 (label) ->  81,542  (45.17%)
+      Null in target : 0
+      Dtype OK (int) : True
+
+[1.7] Key Categorical Distributions:
+
+      Shipping Mode:
+        Standard Class                      107,752  (59.7%)
+        Second Class                         35,216  (19.5%)
+        First Class                          27,814  (15.4%)
+        Same Day                              9,737  (5.4%)
+
+      Market:
+        LATAM                                51,594  (28.6%)
+        Europe                               50,252  (27.8%)
+        Pacific Asia                         41,260  (22.9%)
+        USCA                                 25,799  (14.3%)
+        Africa                               11,614  (6.4%)
+
+      Customer Segment:
+        Consumer                             93,504  (51.8%)
+        Corporate                            54,789  (30.4%)
+        Home Office                          32,226  (17.9%)
+
+      Order Status:
+        COMPLETE                             59,491  (33.0%)
+        PENDING_PAYMENT                      39,832  (22.1%)
+        PROCESSING                           21,902  (12.1%)
+        PENDING                              20,227  (11.2%)
+        CLOSED                               19,616  (10.9%)
+        ON_HOLD                               9,804  (5.4%)
+        SUSPECTED_FRAUD                       4,062  (2.3%)
+        CANCELED                              3,692  (2.0%)
+        PAYMENT_REVIEW                        1,893  (1.0%)
+
+      Delivery Status:
+        Late delivery                        98,977  (54.8%)
+        Advance shipping                     41,592  (23.0%)
+        Shipping on time                     32,196  (17.8%)
+        Shipping canceled                     7,754  (4.3%)
+
+      Type:
+        DEBIT                                69,295  (38.4%)
+        TRANSFER                             49,883  (27.6%)
+        PAYMENT                              41,725  (23.1%)
+        CASH                                 19,616  (10.9%)
+
+      Order Region:
+        Central America                      28,341  (15.7%)
+        Western Europe                       27,109  (15.0%)
+        South America                        14,935  (8.3%)
+        Oceania                              10,148  (5.6%)
+        Northern Europe                       9,792  (5.4%)
+        Southeast Asia                        9,539  (5.3%)
+        Southern Europe                       9,431  (5.2%)
+        Caribbean                             8,318  (4.6%)
+        West of USA                           7,993  (4.4%)
+        South Asia                            7,731  (4.3%)
+        Eastern Asia                          7,280  (4.0%)
+        East of USA                           6,915  (3.8%)
+        West Asia                             6,009  (3.3%)
+        US Center                             5,887  (3.3%)
+        South of  USA                         4,045  (2.2%)
+        Eastern Europe                        3,920  (2.2%)
+        West Africa                           3,696  (2.0%)
+        North Africa                          3,232  (1.8%)
+        East Africa                           1,852  (1.0%)
+        Central Africa                        1,677  (0.9%)
+        Southern Africa                       1,157  (0.6%)
+        Canada                                  959  (0.5%)
+        Central Asia                            553  (0.3%)
+
+[1.8] Numerical Feature Summary:
+      Days for shipping (real)                      min=      0.00  mean=      3.50  max=      6.00
+      Days for shipment (scheduled)                 min=      0.00  mean=      2.93  max=      4.00
+      Benefit per order                             min=  -4274.98  mean=     21.97  max=    911.80
+      Sales per customer                            min=      7.49  mean=    183.11  max=   1939.99
+      Late_delivery_risk                            min=      0.00  mean=      0.55  max=      1.00
+      Category Id                                   min=      2.00  mean=     31.85  max=     76.00
+      Customer Id                                   min=      1.00  mean=   6691.38  max=  20757.00
+      Customer Zipcode                              min=    603.00  mean=  35921.13  max=  99205.00
+      Department Id                                 min=      2.00  mean=      5.44  max=     12.00
+      Latitude                                      min=    -33.94  mean=     29.72  max=     48.78
+      Longitude                                     min=   -158.03  mean=    -84.92  max=    115.26
+      Order Customer Id                             min=      1.00  mean=   6691.38  max=  20757.00
+      Order Item Discount                           min=      0.00  mean=     20.66  max=    500.00
+      Order Item Discount Rate                      min=      0.00  mean=      0.10  max=      0.25
+      Order Item Product Price                      min=      9.99  mean=    141.23  max=   1999.99
+      Order Item Profit Ratio                       min=     -2.75  mean=      0.12  max=      0.50
+      Order Item Quantity                           min=      1.00  mean=      2.13  max=      5.00
+      Sales                                         min=      9.99  mean=    203.77  max=   1999.99
+      Order Item Total                              min=      7.49  mean=    183.11  max=   1939.99
+      Order Profit Per Order                        min=  -4274.98  mean=     21.97  max=    911.80
+      Product Price                                 min=      9.99  mean=    141.23  max=   1999.99
+
+[PART 1 COMPLETE] Dataset loaded and validated.
+======================= PART 2 -- DATA CLEANING =======================
+
+[2.1] Handling Missing Values:
+      Customer Lname    -> filled with 'Unknown'
+     Customer Zipcode  -> filled with median (19380.0)
+     Remaining nulls   : 11
+
+[2.2] Inconsistency Checks:
+      Negative Sales values       : 0
+      Zero/Negative Product Price : 0
+      Scheduled days <= 0         : 9737
+      Discount rate out of [0,1]  : 0
+      Profit ratio out of [-1,1]  : 6301
+      No critical inconsistencies found requiring row removal.
+
+[2.3] Removing PII and Irrelevant Columns:
+      Dropped [PII]  : Customer Fname
+      Dropped [PII]  : Customer Lname
+      Dropped [PII]  : Customer Street
+      Dropped [PII]  : Customer City
+      Dropped [PII]  : Customer Zipcode
+      Dropped [PII]  : Customer Id
+      Dropped [PII]  : Order Customer Id
+      Dropped [High-Cardinality/Redundant]  : Product Name
+      Dropped [High-Cardinality/Redundant]  : Order City
+      Dropped [High-Cardinality/Redundant]  : Order State
+      Dropped [High-Cardinality/Redundant]  : Order Country
+      Dropped [High-Cardinality/Redundant]  : Customer Country
+      Dropped [High-Cardinality/Redundant]  : Customer State
+
+[2.4] Duplicate Row Check:
+      Duplicate rows detected: 0
+      No exact duplicates -- no action needed.
+
+[2.5] Column Name Standardization:
+      Column names already clean (mixed case, spaces -- kept as-is for readability).
+      Remaining columns after cleaning: 27
+      Remaining rows                  : 180,519
+
+[PART 2 COMPLETE] Data cleaned and PII removed.
+      Shape after cleaning: (180519, 27)
+====================== PART 3 -- LEAKAGE ANALYSIS ======================
+
+Objective: Predict Late_delivery_risk BEFORE an order is shipped.
+Features must only include information available at ORDER CREATION time.
+
+========================================================================
+  FEATURE-BY-FEATURE LEAKAGE ASSESSMENT
+========================================================================
+
+[3.1] Days for shipping (real)
+  Status   : *** CRITICAL LEAKAGE ***
+  Reason   : This is the ACTUAL number of days the order took to be shipped.
+             It is only known after shipment is complete -- exactly the outcome
+             we are trying to predict. Including this would give the model
+             direct access to the future.
+  Evidence : Correlation with target:
+             Pearson r = 0.4014  (very high -> confirms leakage)
+  Decision: REMOVE
+
+[3.2] Delivery Status
+  Status   : *** CRITICAL LEAKAGE ***
+  Reason   : This column is a direct, human-readable encoding of the target.
+             'Late delivery' -> Late_delivery_risk = 1
+             'Advance shipping' / 'Shipping on time' -> Late_delivery_risk = 0
+             'Shipping canceled' -> Late_delivery_risk = 0
+             It is 100% determined after the fact -- completely post-shipment.
+  Evidence :
+             Late_delivery_risk      0      1
+             Delivery Status                 
+             Advance shipping    41592      0
+             Late delivery           0  98977
+             Shipping canceled    7754      0
+             Shipping on time    32196      0
+  Decision: REMOVE
+
+[3.3] Order Status  (DETAILED INVESTIGATION)
+  At-order-creation statuses (PRE-shipment, SAFE):
+    PENDING          -- order placed, not yet processed
+    PENDING_PAYMENT  -- order placed, payment not confirmed
+    PROCESSING       -- order being prepared
+    PAYMENT_REVIEW   -- under review before fulfillment
+    SUSPECTED_FRAUD  -- flagged before shipment
+
+  Post-fulfillment statuses (POST-shipment, LEAKAGE RISK):
+    COMPLETE         -- order fully delivered
+    CLOSED           -- order closed after delivery
+    CANCELED         -- may be before or after shipment
+    ON_HOLD          -- ambiguous timing
+
+  Distribution in dataset:
+    COMPLETE                   59,491  (33.0%)
+    PENDING_PAYMENT            39,832  (22.1%)
+    PROCESSING                 21,902  (12.1%)
+    PENDING                    20,227  (11.2%)
+    CLOSED                     19,616  (10.9%)
+    ON_HOLD                     9,804  (5.4%)
+    SUSPECTED_FRAUD             4,062  (2.3%)
+    CANCELED                    3,692  (2.0%)
+    PAYMENT_REVIEW              1,893  (1.0%)
+
+  Late delivery rate by Order Status:
+    PENDING                   late_rate = 0.579
+    PENDING_PAYMENT           late_rate = 0.575
+    COMPLETE                  late_rate = 0.575
+    PAYMENT_REVIEW            late_rate = 0.572
+    PROCESSING                late_rate = 0.571
+    CLOSED                    late_rate = 0.566
+    ON_HOLD                   late_rate = 0.556
+    CANCELED                  late_rate = 0.000
+    SUSPECTED_FRAUD           late_rate = 0.000
+
+  Verdict: COMPLETE (33%) and CLOSED (10.9%) are post-shipment.
+           However, the majority of statuses (PENDING, PROCESSING, etc.)
+           ARE pre-shipment. The variable captures a mix of pre- and
+           post-shipment states.
+  Conservative Decision: REMOVE Order Status to eliminate all leakage risk.
+           A pre-shipment system would never see COMPLETE or CLOSED.
+           Keeping it would cause the model to learn from unavailable signals.
+
+[3.4] Other Fields -- Rapid Assessment:
+  Days for shipment (scheduled)   : SAFE  -- planned at order creation
+  Shipping Mode                   : SAFE  -- selected at order creation
+  Type (payment method)           : SAFE  -- known at order creation
+  Order Item Quantity             : SAFE  -- known at order creation
+  Order Item Product Price        : SAFE  -- catalogue price, pre-shipment
+  Order Item Discount             : SAFE  -- applied at order creation
+  Order Item Discount Rate        : SAFE  -- applied at order creation
+  Sales / Order Item Total        : SAFE  -- calculated at order creation
+  Market / Order Region           : SAFE  -- geographic, known at order creation
+  Customer Segment                : SAFE  -- CRM attribute, pre-shipment
+  Department Name / Category Name : SAFE  -- product classification, pre-shipment
+  Product Price                   : SAFE  -- catalogue, pre-shipment
+  Latitude / Longitude            : SAFE  -- customer location, known at creation
+  Order Item Profit Ratio         : BORDERLINE -- calculated margin, may be
+                                    estimated at order time; kept (low leakage risk)
+  Benefit per order               : BORDERLINE -- net profit, best estimated;
+                                    kept as it reflects expected order value
+  Sales per customer              : BORDERLINE -- historical aggregate; kept
+  Order Profit Per Order          : BORDERLINE -- mirrors Benefit per order; kept
+
+[3.5] Removing Leakage Columns:
+      Removed: Days for shipping (real)
+      Removed: Delivery Status
+      Removed: Order Status
+
+      Shape after leakage removal: (180519, 24)
+
+[PART 3 COMPLETE] Leakage analysis done. Dataset is pre-shipment safe.
+================== PART 4 -- TRAIN/TEST PREPROCESSING ==================
+
+[4.1] Feature / Target Separation:
+      X shape  : (180519, 23)
+      y shape  : (180519,)
+      Features : ['Type', 'Days for shipment (scheduled)', 'Benefit per order', 'Sales per customer', 'Category Id', 'Category Name', 'Customer Segment', 'Department Id', 'Department Name', 'Latitude', 'Longitude', 'Market', 'Order Item Discount', 'Order Item Discount Rate', 'Order Item Product Price', 'Order Item Profit Ratio', 'Order Item Quantity', 'Sales', 'Order Item Total', 'Order Profit Per Order', 'Order Region', 'Product Price', 'Shipping Mode']
+
+[4.2] Stratified Train/Test Split (80/20):
+      X_train : (144415, 23)
+      X_test  : (36104, 23)
+      y_train : (144415,)  | late=79181 (54.83%)
+      y_test  : (36104,)   | late=19796  (54.83%)
+
+[4.3] Column Type Identification (on TRAIN set):
+      Categorical (7): ['Type', 'Category Name', 'Customer Segment', 'Department Name', 'Market', 'Order Region', 'Shipping Mode']
+      Numerical   (16): ['Days for shipment (scheduled)', 'Benefit per order', 'Sales per customer', 'Category Id', 'Department Id', 'Latitude', 'Longitude', 'Order Item Discount', 'Order Item Discount Rate', 'Order Item Product Price', 'Order Item Profit Ratio', 'Order Item Quantity', 'Sales', 'Order Item Total', 'Order Profit Per Order', 'Product Price']
+
+[4.4] Feature Engineering:
+      Added: shipping_pressure, mode_risk_flag, high_discount_flag,
+             order_value_per_unit, profit_margin
+      X_train shape after FE: (144415, 28)
+      X_test  shape after FE: (36104, 28)
+
+[4.5] Categorical Encoding (Label Encoding -- fit on TRAIN only):
+      Type                                4 classes
+      Category Name                       50 classes
+      Customer Segment                    3 classes
+      Department Name                     11 classes
+      Market                              5 classes
+      Order Region                        23 classes
+      Shipping Mode                       4 classes
+
+[4.6] Numerical Scaling (StandardScaler -- fit on TRAIN only):
+      Scaled 21 numerical features.
+      Train mean after scaling (sample 3 cols):
+        Days for shipment (scheduled)            mean=-0.000000  std=1.000003
+        Benefit per order                        mean=0.000000  std=1.000003
+        Sales per customer                       mean=-0.000000  std=1.000003
+
+[4.7] Class Imbalance Analysis:
+      Class 0 (On-Time) :  65,234  (45.17%)
+      Class 1 (Late)    :  79,181  (54.83%)
+      Imbalance ratio   : 0.824  (counts[0] / counts[1])
+
+      Assessment:
+        Ratio = 0.824 (< 1.0) -- target is slightly MAJORITY late.
+        The 55/45 split is considered MILD imbalance.
+
+      Strategy chosen: class_weight='balanced' for sklearn models
+                       scale_pos_weight for XGBoost
+      Reason: SMOTE is not needed for mild imbalance; class weights are
+              simpler, introduce no synthetic data risk, and are applied
+              per-model rather than modifying the dataset itself.
+      SMOTE  : Not applied (mild imbalance + large dataset size).
+
+[4.8] Saving preprocessed data to data/ folder:
+      data/X_train.csv, X_test.csv, y_train.csv, y_test.csv
+      data/cleaned_data.csv
+      data/preprocessing_meta.json
+      models/encoders.pkl, scaler.pkl, cat_cols.pkl, num_cols.pkl
+
+[PART 4 COMPLETE] Train/Test preprocessing pipeline finished.
+======================== PART 5 -- VERIFICATION ========================
+
+[5.1] Leakage Checks:
+  [PASS] 'Days for shipping (real)' not in X_train
+         Column absent
+  [PASS] 'Delivery Status' not in X_train
+         Column absent
+  [PASS] 'Order Status' not in X_train
+         Column absent
+
+[5.2] Target Leakage:
+  [PASS] 'Late_delivery_risk' not in X_train
+
+[5.3] Missing Values:
+  [PASS] X_train has 0 missing values
+         nulls = 0
+  [PASS] X_test  has 0 missing values
+         nulls = 0
+
+[5.4] Shape Verification:
+  [PASS] X_train rows ~ 80% of data
+         X_train=144,415  expected~144,415
+  [PASS] X_test  rows ~ 20% of data
+         X_test=36,104   expected~36,103
+  [PASS] X_train and X_test have same number of columns
+         train_cols=28  test_cols=28
+  [PASS] y_train length matches X_train
+  [PASS] y_test length matches X_test
+
+[5.5] Stratification (target distribution preserved):
+  [PASS] Train late_rate within +/-1% of full dataset
+         train=0.5483  original=0.5483
+  [PASS] Test  late_rate within +/-1% of full dataset
+         test=0.5483   original=0.5483
+
+[5.6] Encoding Sanity:
+  [PASS] No object (string) columns in X_train
+         String cols left: []
+  [PASS] No object (string) columns in X_test
+
+[5.7] Scaling Sanity (numerical cols should have mean~0, std~1 in train):
+  [PASS] X_train numerical means ~ 0
+         max abs mean: 0.000000
+  [PASS] X_train numerical stds  ~ 1
+         max abs std dev from 1: 0.000003
+
+[5.8] Preprocessing Contamination Check:
+      Encoders fitted on: TRAIN only -- verified (fit_transform on X_train,
+                          transform only on X_test)
+      Scaler fitted on  : TRAIN only -- verified (fit_transform on X_train,
+                          transform only on X_test)
+  [PASS] Preprocessing fitted on TRAIN only (architectural guarantee)
+--------------------- GROUP 1 VERIFICATION SUMMARY ---------------------
+
+  Dataset         : APL_Logistics.csv
+  Original rows   : 180,519
+  After cleaning  : 180,519
+
+  Columns dropped :
+    PII                   : ['Customer Fname', 'Customer Lname', 'Customer Street', 'Customer City', 'Customer Zipcode', 'Customer Id', 'Order Customer Id']
+    High-cardinality      : ['Product Name', 'Order City', 'Order State', 'Order Country', 'Customer Country', 'Customer State']
+    Leakage               : ['Days for shipping (real)', 'Delivery Status', 'Order Status']
+
+  Final feature count     : 28
+  Engineered features     : 5 (shipping_pressure, mode_risk_flag,
+                              high_discount_flag, order_value_per_unit,
+                              profit_margin)
+
+  Train set               : 144,415 rows x 28 cols
+  Test  set               : 36,104 rows  x 28 cols
+  Target (train) late %   : 54.83%
+  Target (test)  late %   : 54.83%
+
+  Class imbalance strategy: class_weight='balanced' / scale_pos_weight
+  Encoding                : LabelEncoder (fit on TRAIN only)
+  Scaling                 : StandardScaler (fit on TRAIN only)
+
+  *** ALL CHECKS PASSED -- GROUP 1 IS COMPLETE AND VERIFIED ***
+  Ready to proceed to GROUP 2 -- Model Development.
+========================================================================

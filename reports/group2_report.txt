@@ -1,0 +1,169 @@
+============================= LOADING DATA =============================
+
+Loading raw data: APL_Logistics.csv
+Shape after cleaning + leakage removal: (180519, 24)
+Train: (144415, 23)  |  Test: (36104, 23)
+==================== PART 6 -- FEATURE ENGINEERING ====================
+
+[6A] Regional Congestion Indicator
+     Method : Target encoding -- mean late-delivery rate per Order Region
+             Computed on TRAIN only, applied to test via lookup + global mean fallback
+     Regions mapped: 23
+     Global mean (fallback for unseen regions): 0.5483
+     Sample region rates:
+       Canada                         -> 0.4759
+       Caribbean                      -> 0.5320
+       Central Africa                 -> 0.5701
+       Central America                -> 0.5502
+       Central Asia                   -> 0.5754
+
+     Engineered features added (8):
+       shipping_pressure_idx
+       mode_risk_flag
+       regional_congestion_idx
+       order_complexity_score
+       order_value_per_unit
+       profit_margin
+       high_discount_flag
+       benefit_per_unit
+
+     X_train shape after FE: (144415, 31)
+     X_test  shape after FE: (36104, 31)
+
+[PART 6 COMPLETE]
+==================== PART 7 -- ENCODING & PIPELINE ====================
+
+[7.1] Identifying column types after feature engineering:
+     Categorical (7): ['Type', 'Category Name', 'Customer Segment', 'Department Name', 'Market', 'Order Region', 'Shipping Mode']
+     Numerical   (24): ['Days for shipment (scheduled)', 'Benefit per order', 'Sales per customer', 'Category Id', 'Department Id', 'Latitude', 'Longitude', 'Order Item Discount', 'Order Item Discount Rate', 'Order Item Product Price', 'Order Item Profit Ratio', 'Order Item Quantity', 'Sales', 'Order Item Total', 'Order Profit Per Order', 'Product Price', 'shipping_pressure_idx', 'mode_risk_flag', 'regional_congestion_idx', 'order_complexity_score', 'order_value_per_unit', 'profit_margin', 'high_discount_flag', 'benefit_per_unit']
+
+[7.2] Building ColumnTransformer pipeline:
+
+     Numerical path:
+       SimpleImputer(strategy='median')
+         --> StandardScaler()
+
+     Categorical path:
+       SimpleImputer(strategy='most_frequent')
+         --> OneHotEncoder(handle_unknown='ignore', sparse_output=False)
+
+     Both pipelines fit ONLY on training data.
+     The combined preprocessor handles any future unseen categories gracefully.
+
+[7.3] Fitting preprocessor on X_train ONLY...
+     Total features after encoding: 124
+     Saved: models/preprocessor.pkl
+     Saved: models/feature_meta.json
+
+[PART 7 COMPLETE]
+=============== PART 8 -- LOGISTIC REGRESSION (Baseline) ===============
+
+[Cross-Validation] Logistic Regression (StratifiedKFold n=5, scoring=roc_auc)...
+  CV AUC: 0.7397 +/- 0.0025  | folds: [0.7432, 0.7378, 0.7398, 0.7362, 0.7414]
+
+[Training] Logistic Regression...
+  ROC-AUC   : 0.7405
+  Precision : 0.8499
+  Recall    : 0.5420
+  F1 Score  : 0.6619
+
+              precision    recall  f1-score   support
+
+     On-Time       0.61      0.88      0.72     16308
+        Late       0.85      0.54      0.66     19796
+
+    accuracy                           0.70     36104
+   macro avg       0.73      0.71      0.69     36104
+weighted avg       0.74      0.70      0.69     36104
+
+Saved: models/lr_pipeline.pkl
+
+[PART 8 COMPLETE]
+======================= PART 9 -- RANDOM FOREST =======================
+
+[Cross-Validation] Random Forest (StratifiedKFold n=5, scoring=roc_auc)...
+  CV AUC: 0.7503 +/- 0.0017  | folds: [0.7536, 0.7499, 0.7496, 0.7492, 0.7492]
+
+[Training] Random Forest...
+  ROC-AUC   : 0.7543
+  Precision : 0.8450
+  Recall    : 0.5517
+  F1 Score  : 0.6676
+
+              precision    recall  f1-score   support
+
+     On-Time       0.62      0.88      0.72     16308
+        Late       0.84      0.55      0.67     19796
+
+    accuracy                           0.70     36104
+   macro avg       0.73      0.71      0.70     36104
+weighted avg       0.74      0.70      0.69     36104
+
+Saved: models/rf_pipeline.pkl
+
+[PART 9 COMPLETE]
+========================== PART 10 -- XGBOOST ==========================
+
+[Cross-Validation] XGBoost (StratifiedKFold n=5, scoring=roc_auc)...
+  CV AUC: 0.7683 +/- 0.0018  | folds: [0.7715, 0.7668, 0.7667, 0.7677, 0.7688]
+
+[Training] XGBoost...
+  ROC-AUC   : 0.7745
+  Precision : 0.8412
+  Recall    : 0.5635
+  F1 Score  : 0.6749
+
+              precision    recall  f1-score   support
+
+     On-Time       0.62      0.87      0.73     16308
+        Late       0.84      0.56      0.67     19796
+
+    accuracy                           0.70     36104
+   macro avg       0.73      0.72      0.70     36104
+weighted avg       0.74      0.70      0.70     36104
+
+Saved: models/xgb_pipeline.pkl
+
+[PART 10 COMPLETE]
+=========================== MODEL COMPARISON ===========================
+
+Model                       AUC  Precision   Recall       F1     CV AUC
+------------------------------------------------------------------------
+Logistic Regression      0.7405     0.8499   0.5420   0.6619     0.7397
+Random Forest            0.7543     0.8450   0.5517   0.6676     0.7503
+XGBoost                  0.7745     0.8412   0.5635   0.6749     0.7683
+
+Best model: XGBoost  (AUC = 0.7745)
+Saved: models/best_pipeline.pkl
+========================== GENERATING FIGURES ==========================
+Saved: figures/g2_confusion_matrices.png
+Saved: figures/g2_roc_curves.png
+Saved: figures/g2_model_comparison.png
+Saved: figures/g2_feature_importance_random_forest.png
+
+Top 10 features (Random Forest):
+  Days for shipment (scheduled)                 0.1349
+  Shipping Mode_Standard Class                  0.1268
+  Shipping Mode_First Class                     0.0970
+  order_complexity_score                        0.0876
+  shipping_pressure_idx                         0.0795
+  mode_risk_flag                                0.0488
+  Shipping Mode_Second Class                    0.0452
+  Latitude                                      0.0301
+  Longitude                                     0.0285
+  profit_margin                                 0.0224
+Saved: figures/g2_feature_importance_xgboost.png
+
+Top 10 features (XGBoost):
+  Shipping Mode_Standard Class                  0.3663
+  mode_risk_flag                                0.1904
+  Shipping Mode_Same Day                        0.1484
+  Days for shipment (scheduled)                 0.1223
+  Shipping Mode_First Class                     0.0610
+  Type_TRANSFER                                 0.0080
+  Shipping Mode_Second Class                    0.0071
+  shipping_pressure_idx                         0.0029
+  Type_CASH                                     0.0016
+  Type_PAYMENT                                  0.0015
+============================ SAVING METRICS ============================
+Saved: models/metrics_summary.json

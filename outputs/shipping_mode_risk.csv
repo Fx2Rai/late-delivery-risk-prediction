@@ -1,0 +1,5 @@
+Shipping Mode,Total_Orders,Mean_Probability,High_Risk_Count
+First Class,5553,0.9484561,5408
+Second Class,7069,0.7341306,5022
+Same Day,1960,0.4193778,6
+Standard Class,21522,0.3394386,2

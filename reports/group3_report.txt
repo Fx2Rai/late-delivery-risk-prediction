@@ -1,0 +1,70 @@
+============= PART 11 & 12 — MODEL COMPARISON & SELECTION =============
+
+[11] Model Comparison Table:
+Model                   ROC-AUC  Precision   Recall       F1
+--------------------------------------------------------------
+Logistic Regression      0.7405     0.8499   0.5420   0.6619
+Random Forest            0.7543     0.8450   0.5517   0.6676
+XGBoost                  0.7745     0.8412   0.5635   0.6749
+
+[12] Model Selection Rationale:
+  Selected Model: XGBoost
+  Reasoning:
+    - ROC-AUC (0.7745): The highest ability to distinguish between on-time and late orders.
+    - Binary Precision (0.8412 @ 0.50 threshold): The standard sklearn metric computed at the default 0.50 decision boundary. Used here to compare model quality, NOT the operational tier precision.
+    - Recall (0.5635): Captures the majority of true late deliveries without over-saturating operations with false positives.
+    - Business alignment: XGBoost provides the strongest overall AUC. Note: the operational High-Risk tier (>=0.70) precision is computed separately in Part 13 from the actual predictions output and reflects what operations teams will observe in practice.
+============= PART 13 — RISK PROBABILITY & CLASSIFICATION =============
+
+  Threshold System Defined:
+    Probability is a continuous output from 0.0 to 1.0.
+    - [0.00, 0.40) -> Low Risk     (Green: Standard monitoring)
+    - [0.40, 0.70) -> Medium Risk  (Yellow: Watchlist, proactive updates)
+    - [0.70, 1.00] -> High Risk    (Red: Immediate operational intervention required)
+
+  Saved: outputs/predictions.csv (36104 rows)
+  (Note: Late_Probability is exported to 6 decimal places to reflect unrounded boundary classification)
+
+  [13.1] Operational Tier-Level Precision (computed from predictions.csv):
+  Risk Tier    Threshold            Orders  Actually Late  Tier Precision
+  ----------------------------------------------------------------------
+  Low          < 0.40               18,931          6,719          35.5%
+  Medium       0.40 – 0.70           6,735          3,716          55.2%
+  High         >= 0.70              10,438          9,361          89.7%  <-- operational High-Risk precision
+
+  NOTE: The binary precision reported in metrics_summary.json (0.8412) is computed
+  at the standard 0.50 sklearn decision threshold and is used for model comparison.
+  The Tier Precision above is what operations teams observe when using the dashboard.
+  Saved: outputs/high_risk_orders.csv (10438 rows)
+  Saved: outputs/regional_risk.csv
+  Saved: outputs/shipping_mode_risk.csv
+=================== PART 14 — EXPLAINABILITY (SHAP) ===================
+
+[14.1] Global Explainability (SHAP)
+  Saved: figures/feature_importance.png
+
+[14.2] Individual Order Explanation
+  Risk Probability : 99.9%
+  Risk Category    : High
+
+  Main contributing factors (pushing risk higher):
+    1. Shipping Mode_First Class (+3.112 impact)
+    2. Type_TRANSFER (+1.570 impact)
+    3. Days for shipment (scheduled) (+1.315 impact)
+    4. Type_DEBIT (+0.312 impact)
+    5. Shipping Mode_Standard Class (+0.236 impact)
+====================== PART 15 — FINAL ML OUTPUTS ======================
+
+[15.1] Renaming and Standardising Models Directory
+  Ensured presence of:
+   - models/best_model.pkl
+   - models/preprocessing_pipeline.pkl
+   - models/feature_columns.pkl
+   - models/metrics_summary.json
+
+[15.2] Generating Final Figures
+  Saved: figures/confusion_matrix.png
+  Saved: figures/roc_curve.png
+  Saved: figures/precision_recall_curve.png
+  Saved: figures/regional_heatmap.png
+=========================== GROUP 3 COMPLETE ===========================

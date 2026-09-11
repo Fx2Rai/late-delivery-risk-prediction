@@ -1,0 +1,106 @@
+{
+  "feature_names": [
+    "Type",
+    "Days for shipment (scheduled)",
+    "Benefit per order",
+    "Sales per customer",
+    "Category Id",
+    "Category Name",
+    "Customer Segment",
+    "Department Id",
+    "Department Name",
+    "Latitude",
+    "Longitude",
+    "Market",
+    "Order Item Discount",
+    "Order Item Discount Rate",
+    "Order Item Product Price",
+    "Order Item Profit Ratio",
+    "Order Item Quantity",
+    "Sales",
+    "Order Item Total",
+    "Order Profit Per Order",
+    "Order Region",
+    "Product Price",
+    "Shipping Mode",
+    "shipping_pressure",
+    "mode_risk_flag",
+    "high_discount_flag",
+    "order_value_per_unit",
+    "profit_margin"
+  ],
+  "cat_cols": [
+    "Type",
+    "Category Name",
+    "Customer Segment",
+    "Department Name",
+    "Market",
+    "Order Region",
+    "Shipping Mode"
+  ],
+  "num_cols": [
+    "Days for shipment (scheduled)",
+    "Benefit per order",
+    "Sales per customer",
+    "Category Id",
+    "Department Id",
+    "Latitude",
+    "Longitude",
+    "Order Item Discount",
+    "Order Item Discount Rate",
+    "Order Item Product Price",
+    "Order Item Profit Ratio",
+    "Order Item Quantity",
+    "Sales",
+    "Order Item Total",
+    "Order Profit Per Order",
+    "Product Price",
+    "shipping_pressure",
+    "mode_risk_flag",
+    "high_discount_flag",
+    "order_value_per_unit",
+    "profit_margin"
+  ],
+  "leakage_removed": [
+    "Days for shipping (real)",
+    "Delivery Status",
+    "Order Status"
+  ],
+  "pii_removed": [
+    "Customer Fname",
+    "Customer Lname",
+    "Customer Street",
+    "Customer City",
+    "Customer Zipcode",
+    "Customer Id",
+    "Order Customer Id"
+  ],
+  "high_card_removed": [
+    "Product Name",
+    "Order City",
+    "Order State",
+    "Order Country",
+    "Customer Country",
+    "Customer State"
+  ],
+  "engineered_features": [
+    "shipping_pressure",
+    "mode_risk_flag",
+    "high_discount_flag",
+    "order_value_per_unit",
+    "profit_margin"
+  ],
+  "train_shape": [
+    144415,
+    28
+  ],
+  "test_shape": [
+    36104,
+    28
+  ],
+  "class_counts_train": {
+    "1": 79181,
+    "0": 65234
+  },
+  "imbalance_ratio": 0.8239
+}
